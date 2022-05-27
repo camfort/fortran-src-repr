@@ -11,8 +11,16 @@ build-type:     Simple
 library
   exposed-modules:
       FortranSrc.Repr.Type.Scalar
+      FortranSrc.Repr.Type.Scalar.Common
+      FortranSrc.Repr.Type.Scalar.Complex
+      FortranSrc.Repr.Type.Scalar.Int
+      FortranSrc.Repr.Type.Scalar.Real
+      FortranSrc.Repr.Util
       FortranSrc.Repr.Value.Common
       FortranSrc.Repr.Value.Scalar
+      FortranSrc.Repr.Value.Scalar.Complex
+      FortranSrc.Repr.Value.Scalar.Int
+      FortranSrc.Repr.Value.Scalar.Real
   other-modules:
       Paths_fortran_src_repr
   hs-source-dirs:
