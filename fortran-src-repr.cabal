@@ -10,6 +10,8 @@ build-type:     Simple
 
 library
   exposed-modules:
+      FortranSrc.Repr.Op
+      FortranSrc.Repr.Tmp
       FortranSrc.Repr.Type.Scalar
       FortranSrc.Repr.Type.Scalar.Common
       FortranSrc.Repr.Type.Scalar.Complex
@@ -63,6 +65,7 @@ library
   ghc-options: -Wall
   build-depends:
       base
+    , bytestring
     , singletons
     , singletons-base
     , singletons-th
