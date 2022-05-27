@@ -12,7 +12,7 @@ data Error
     deriving stock (Show, Eq)
 
 -- https://gcc.gnu.org/onlinedocs/gfortran/DBLE.html#DBLE
-opIcDble :: FV pr -> Either Error (FReal pr 'FTReal8)
+opIcDble :: FV pr -> Either Error (FReal 'FTReal8)
 opIcDble = \case
   FVComplex (SomeFComplex _ c) -> case c of
     FComplex8 (FReal4 r) _i -> Right $ FReal8 $ float2Double r

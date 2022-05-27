@@ -11,8 +11,8 @@ import Data.Data ( Data )
 
 data FV (pr :: PrimRepr)
   = FVInt     (SomeFInt     pr)
-  | FVReal    (SomeFReal    pr)
-  | FVComplex (SomeFComplex pr)
+  | FVReal    SomeFReal
+  | FVComplex SomeFComplex
   | FVLogical (SomeFLogical pr)
-  | FVString  (SomeFString  pr)
+  | FVString  SomeFString
     deriving stock (Show, Eq)
