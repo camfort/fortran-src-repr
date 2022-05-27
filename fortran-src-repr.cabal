@@ -1,0 +1,58 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.4.
+--
+-- see: https://github.com/sol/hpack
+
+name:           fortran-src-repr
+version:        0.0.0
+build-type:     Simple
+
+library
+  exposed-modules:
+      FortranSrc.Repr.Type.Scalar
+      FortranSrc.Repr.Value.Common
+      FortranSrc.Repr.Value.Scalar
+  other-modules:
+      Paths_fortran_src_repr
+  hs-source-dirs:
+      src
+  default-extensions:
+      EmptyCase
+      FlexibleContexts
+      FlexibleInstances
+      InstanceSigs
+      MultiParamTypeClasses
+      PolyKinds
+      LambdaCase
+      DerivingStrategies
+      StandaloneDeriving
+      DeriveAnyClass
+      DeriveGeneric
+      DeriveDataTypeable
+      DeriveFunctor
+      DeriveFoldable
+      DeriveTraversable
+      DeriveLift
+      ImportQualifiedPost
+      StandaloneKindSignatures
+      DerivingVia
+      RoleAnnotations
+      TypeApplications
+      DataKinds
+      TypeFamilies
+      TypeOperators
+      BangPatterns
+      GADTs
+      DefaultSignatures
+      RankNTypes
+      UndecidableInstances
+      MagicHash
+      ScopedTypeVariables
+  ghc-options: -Wall
+  build-depends:
+      base
+    , singletons
+    , singletons-base
+    , singletons-th
+  default-language: Haskell2010
