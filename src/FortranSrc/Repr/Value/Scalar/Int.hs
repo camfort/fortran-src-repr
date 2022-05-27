@@ -1,9 +1,5 @@
-{- TODO
-  * do use inner newtypes? might make it easier to work with things.
--}
-
 {-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE TypeFamilyDependencies #-} -- used for better inference (maybe)
+{-# LANGUAGE TypeFamilyDependencies #-} -- just for better inference (maybe)
 
 module FortranSrc.Repr.Value.Scalar.Int where
 
@@ -30,7 +26,7 @@ data FInt (pr :: PrimRepr) (k :: FTInt) where
 deriving stock instance Show (FInt pr k)
 
 type FIntMRep :: FTInt -> Type
-type family FIntMRep k where
+type family FIntMRep k = r | r -> k where
     FIntMRep 'FTInt1 = Int8
     FIntMRep 'FTInt2 = Int16
     FIntMRep 'FTInt4 = Int32

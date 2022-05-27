@@ -1,5 +1,3 @@
-{-# LANGUAGE TypeFamilyDependencies #-} -- used for better inference (maybe)
-
 module FortranSrc.Repr.Value.Scalar.Real where
 
 import FortranSrc.Repr.Value.Common

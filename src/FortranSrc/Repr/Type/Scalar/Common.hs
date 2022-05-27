@@ -1,19 +1,11 @@
-{-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE TemplateHaskell #-}
-
 module FortranSrc.Repr.Type.Scalar.Common where
 
 import FortranSrc.Repr.Util
 
-import GHC.Generics ( Generic )
-import Data.Data ( Data )
-
 import Data.Kind
 import GHC.TypeNats
 
-import Data.Singletons.TH
--- required for deriving instances (seems like bug)
-import Prelude.Singletons
+import Data.Type.Equality
 import Data.Ord.Singletons
 import Unsafe.Coerce
 

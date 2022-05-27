@@ -1,4 +1,3 @@
-{-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 module FortranSrc.Repr.Type.Scalar.Real where

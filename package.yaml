@@ -55,6 +55,7 @@ dependencies:
 - singletons
 - singletons-th
 - singletons-base
+- text
 
 library:
   source-dirs: src

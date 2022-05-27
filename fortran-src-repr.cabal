@@ -15,12 +15,15 @@ library
       FortranSrc.Repr.Type.Scalar.Complex
       FortranSrc.Repr.Type.Scalar.Int
       FortranSrc.Repr.Type.Scalar.Real
+      FortranSrc.Repr.Type.Scalar.String
       FortranSrc.Repr.Util
       FortranSrc.Repr.Value.Common
       FortranSrc.Repr.Value.Scalar
       FortranSrc.Repr.Value.Scalar.Complex
       FortranSrc.Repr.Value.Scalar.Int
+      FortranSrc.Repr.Value.Scalar.Logical
       FortranSrc.Repr.Value.Scalar.Real
+      FortranSrc.Repr.Value.Scalar.String
   other-modules:
       Paths_fortran_src_repr
   hs-source-dirs:
@@ -63,4 +66,5 @@ library
     , singletons
     , singletons-base
     , singletons-th
+    , text
   default-language: Haskell2010
