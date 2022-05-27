@@ -12,11 +12,14 @@ import Unsafe.Coerce
 
 data SomeFString pr = forall (l :: CharLen). SomeFString (Sing l) (FString pr l)
 deriving stock instance Show (SomeFString pr)
+instance Eq (SomeFString pr) where
+    (SomeFString _ (FString s1)) == (SomeFString _ (FString s2)) = s1 == s2
 
 -- TODO unsafe constructor do not use >:(
 data FString (pr :: PrimRepr) (l :: CharLen) where
     FString :: KnownNat n => Text -> FString pr ('CharLen n)
 deriving stock instance Show (FString pr l)
+deriving stock instance Eq   (FString pr l)
 
 fString :: forall n pr. KnownNat n => Text -> Maybe (FString pr ('CharLen n))
 fString s =

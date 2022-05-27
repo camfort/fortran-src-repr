@@ -6,6 +6,8 @@ import FortranSrc.Repr.Value.Scalar.Real
 import FortranSrc.Repr.Value.Scalar.Complex
 import FortranSrc.Repr.Value.Scalar.Logical
 import FortranSrc.Repr.Value.Scalar.String
+import GHC.Generics ( Generic )
+import Data.Data ( Data )
 
 data FV (pr :: PrimRepr)
   = FVInt     (SomeFInt     pr)
@@ -13,4 +15,4 @@ data FV (pr :: PrimRepr)
   | FVComplex (SomeFComplex pr)
   | FVLogical (SomeFLogical pr)
   | FVString  (SomeFString  pr)
-    deriving stock (Show)
+    deriving stock (Show, Eq)

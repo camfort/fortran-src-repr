@@ -15,6 +15,13 @@ import Data.Type.Equality
 data SomeFInt pr =
     forall (k :: FTInt). SomeFInt (Sing k) (FInt pr k)
 deriving stock instance Show (SomeFInt pr)
+instance Eq (SomeFInt pr) where
+    (SomeFInt _ (FIntI i1)) == (SomeFInt _ (FIntI i2)) = i1 == i2
+    (SomeFInt k1 (FIntM i1)) == (SomeFInt k2 (FIntM i2)) =
+        case singCompare k1 k2 of
+          SingEq Refl -> i1 == i2
+          SingLt      -> fromIntegral i1 == i2
+          SingGt      -> i1 == fromIntegral i2
 
 -- | Recover some @INTEGER(x)@'s kind (the @x@).
 someFIntKind :: SomeFInt pr -> FTInt
@@ -24,6 +31,7 @@ data FInt (pr :: PrimRepr) (k :: FTInt) where
     FIntM :: (rep ~ FIntMRep k, Integral rep, Show rep) => rep -> FInt 'Machine k
     FIntI :: Integer -> FInt 'Idealized k
 deriving stock instance Show (FInt pr k)
+deriving stock instance Eq   (FInt pr k)
 
 type FIntMRep :: FTInt -> Type
 type family FIntMRep k = r | r -> k where
