@@ -17,11 +17,19 @@ data SomeFInt pr =
 deriving stock instance Show (SomeFInt pr)
 instance Eq (SomeFInt pr) where
     (SomeFInt _ (FIntI i1)) == (SomeFInt _ (FIntI i2)) = i1 == i2
-    (SomeFInt k1 (FIntM i1)) == (SomeFInt k2 (FIntM i2)) =
-        case singCompare k1 k2 of
-          SingEq Refl -> i1 == i2
-          SingLt      -> fromIntegral i1 == i2
-          SingGt      -> i1 == fromIntegral i2
+    a1@(SomeFInt _ FIntM{}) == a2@(SomeFInt _ FIntM{}) = someFIntMBinOp (==) a1 a2
+instance Ord (SomeFInt pr) where
+    compare (SomeFInt _ (FIntI i1)) (SomeFInt _ (FIntI i2)) = compare i1 i2
+    compare a1@(SomeFInt _ FIntM{}) a2@(SomeFInt _ FIntM{}) = someFIntMBinOp compare a1 a2
+
+someFIntMBinOp
+    :: (forall a. Integral a => a -> a -> b)
+    -> SomeFInt 'Machine -> SomeFInt 'Machine -> b
+someFIntMBinOp f (SomeFInt k1 (FIntM i1)) (SomeFInt k2 (FIntM i2)) =
+    case singCompare k1 k2 of
+      SingEq Refl ->              i1 `f`              i2
+      SingLt      -> fromIntegral i1 `f`              i2
+      SingGt      ->              i1 `f` fromIntegral i2
 
 -- | Recover some @INTEGER(x)@'s kind (the @x@).
 someFIntKind :: SomeFInt pr -> FTInt
@@ -32,6 +40,7 @@ data FInt (pr :: PrimRepr) (k :: FTInt) where
     FIntI :: Integer -> FInt 'Idealized k
 deriving stock instance Show (FInt pr k)
 deriving stock instance Eq   (FInt pr k)
+deriving stock instance Ord  (FInt pr k)
 
 type FIntMRep :: FTInt -> Type
 type family FIntMRep k = r | r -> k where
@@ -50,19 +59,18 @@ fIntCheckBounds i =
          then Just "TODO too small"
          else Nothing
 
-class FIntAdd (pr :: PrimRepr) where
-    fIntAdd :: SomeFInt pr -> SomeFInt pr -> SomeFInt pr
+fIntAdd :: SomeFInt pr -> SomeFInt pr -> SomeFInt pr
+fIntAdd (SomeFInt k1 (FIntI i1)) (SomeFInt k2 (FIntI i2)) =
+    case singCompare k1 k2 of
+      SingEq Refl -> SomeFInt k1 (FIntI (i1+i2))
+      SingLt      -> SomeFInt k2 (FIntI (i1+i2))
+      SingGt      -> SomeFInt k1 (FIntI (i1+i2))
+fIntAdd (SomeFInt k1 (FIntM i1)) (SomeFInt k2 (FIntM i2)) =
+    case singCompare k1 k2 of
+      SingEq Refl -> SomeFInt k1 (FIntM (i1+i2))
+      SingLt      -> SomeFInt k2 (FIntM (fromIntegral i1+i2))
+      SingGt      -> SomeFInt k1 (FIntM (i1+fromIntegral i2))
 
-instance FIntAdd 'Machine where
-    fIntAdd (SomeFInt k1 (FIntM i1)) (SomeFInt k2 (FIntM i2)) =
-        case singCompare k1 k2 of
-          SingEq Refl -> SomeFInt k1 (FIntM (i1+i2))
-          SingLt      -> SomeFInt k2 (FIntM (fromIntegral i1+i2))
-          SingGt      -> SomeFInt k1 (FIntM (i1+fromIntegral i2))
-
-instance FIntAdd 'Idealized where
-    fIntAdd (SomeFInt k1 (FIntI i1)) (SomeFInt k2 (FIntI i2)) =
-        case singCompare k1 k2 of
-          SingEq Refl -> SomeFInt k1 (FIntI (i1+i2))
-          SingLt      -> SomeFInt k2 (FIntI (i1+i2))
-          SingGt      -> SomeFInt k1 (FIntI (i1+i2))
+fIntUse :: (forall a. Integral a => a -> b) -> SomeFInt pr -> b
+fIntUse f (SomeFInt _ x) = case x of FIntI i -> f i
+                                     FIntM i -> f i

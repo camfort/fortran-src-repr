@@ -1,6 +1,7 @@
+-- TODO Ord instance
+
 module FortranSrc.Repr.Value.Scalar.String where
 
-import FortranSrc.Repr.Value.Common
 import FortranSrc.Repr.Type.Scalar.String
 import GHC.TypeNats
 import Data.Text ( Text )
@@ -33,7 +34,7 @@ someFString s =
       SomeNat (_ :: Proxy n) -> SomeFString (SCharLen @n SNat) $ FString s
 
 -- TODO dunno how to do this without unsafeCoerce because of the type-level nat
--- addition >:(
+-- addition >:( -- oh actually seems this is an expected usage of it. ok
 concatFString
     :: forall l1 l2. (KnownNat l1, KnownNat l2)
     => FString ('CharLen l1)
