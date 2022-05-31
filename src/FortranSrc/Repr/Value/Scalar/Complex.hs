@@ -1,41 +1,78 @@
--- TODO Ord instance
-
 module FortranSrc.Repr.Value.Scalar.Complex where
 
-import FortranSrc.Repr.Type.Scalar.Complex
 import FortranSrc.Repr.Type.Scalar.Real
 import FortranSrc.Repr.Value.Scalar.Real
 import GHC.Float ( float2Double )
 
-data FComplex (k :: FTComplex) where
-    FComplex8  :: Float  -> Float  -> FComplex 'FTComplex8
-    FComplex16 :: Double -> Double -> FComplex 'FTComplex16
+data FComplex (k :: FTReal) where
+    FComplex8  :: Float  -> Float  -> FComplex 'FTReal4
+    FComplex16 :: Double -> Double -> FComplex 'FTReal8
 deriving stock instance Show (FComplex k)
 deriving stock instance Eq   (FComplex k)
+deriving stock instance Ord  (FComplex k) -- TODO
 
-data SomeFComplex = forall (k :: FTComplex). SomeFComplex (FComplex k)
+fComplexBOp'
+    :: (Float  -> Float  -> a)
+    -> (a -> a -> r)
+    -> (Double -> Double -> b)
+    -> (b -> b -> r)
+    -> FComplex kl -> FComplex kr -> r
+fComplexBOp' k8f k8g k16f k16g l r =
+    case (l, r) of
+      (FComplex8  lr li, FComplex8  rr ri) -> k8g  (k8f  lr rr) (k8f  li ri)
+      (FComplex16 lr li, FComplex16 rr ri) -> k16g (k16f lr rr) (k16f li ri)
+      (FComplex8  lr li, FComplex16 rr ri) ->
+        let lr' = float2Double lr
+            li' = float2Double li
+        in  k16g (k16f lr' rr) (k16f li' ri)
+      (FComplex16 lr li, FComplex8  rr ri) ->
+        let rr' = float2Double rr
+            ri' = float2Double ri
+        in  k16g (k16f lr rr') (k16f li ri')
+
+fComplexBOp
+    :: (forall a. RealFloat a => a -> a -> b)
+    -> (b -> b -> r)
+    -> FComplex kl -> FComplex kr -> r
+fComplexBOp f g = fComplexBOp' f g f g
+
+data SomeFComplex = forall (k :: FTReal). SomeFComplex (FComplex k)
 deriving stock instance Show SomeFComplex
-instance Eq SomeFComplex where
-    (SomeFComplex c1) == (SomeFComplex c2) =
-        case (c1, c2) of
-          (FComplex8  r1 i1, FComplex8  r2 i2) -> r1 == r2 && i1 == i2
-          (FComplex16 r1 i1, FComplex16 r2 i2) -> r1 == r2 && i1 == i2
-          (FComplex8  r1 i1, FComplex16 r2 i2) ->
-              float2Double r1 == r2 && float2Double i1 == i2
-          (FComplex16 r1 i1, FComplex8  r2 i2) ->
-              r1 == float2Double r2 && i1 == float2Double i2
+instance Eq  SomeFComplex where
+    (SomeFComplex l) == (SomeFComplex r) = fComplexBOp (==) (&&) l r
 
-someFComplexRealBinOp
+someFComplexBOp'
+    :: (Float  -> Float  -> a)
+    -> (a -> a -> r)
+    -> (Double -> Double -> b)
+    -> (b -> b -> r)
+    -> SomeFComplex -> SomeFComplex -> r
+someFComplexBOp' k8f k8g k16f k16g (SomeFComplex l) (SomeFComplex r) =
+    fComplexBOp' k8f k8g k16f k16g l                r
+
+someFComplexBOp
+    :: (forall a. RealFloat a => a -> a -> b)
+    -> (b -> b -> r)
+    -> SomeFComplex -> SomeFComplex -> r
+someFComplexBOp f g = someFComplexBOp' f g f g
+
+someFComplexBOpWrap'
     :: (Float  -> Float  -> Float)
     -> (Double -> Double -> Double)
-    -> SomeFReal -> SomeFComplex -> SomeFComplex
-someFComplexRealBinOp k8f k16f (SomeFReal r) (SomeFComplex c) =
-    case (r, c) of
-      (FReal4 r, FComplex8  cr ci) ->
-        SomeFComplex $ FComplex8  (k8f  cr r) ci
-      (FReal8 r, FComplex16 cr ci) ->
-        SomeFComplex $ FComplex16 (k16f cr r) ci
-      (FReal4 r, FComplex16 cr ci) ->
-        SomeFComplex $ FComplex16 (k16f cr (float2Double r)) ci
-      (FReal8 r, FComplex8  cr ci) ->
-        SomeFComplex $ FComplex16 (k16f (float2Double cr) r) (float2Double ci)
+    -> SomeFComplex -> SomeFComplex -> SomeFComplex
+someFComplexBOpWrap' k8f     k16f =
+    someFComplexBOp' k8f k8g k16f k16g
+  where
+    k8g  l r = SomeFComplex $ FComplex8  l r
+    k16g l r = SomeFComplex $ FComplex16 l r
+
+someFComplexBOpWrap
+    :: (forall a. RealFloat a => a -> a -> a)
+    -> SomeFComplex -> SomeFComplex -> SomeFComplex
+someFComplexBOpWrap f = someFComplexBOpWrap' f f
+
+someFComplexFromReal :: SomeFReal -> SomeFComplex
+someFComplexFromReal (SomeFReal r) =
+    case r of
+      FReal4 x -> SomeFComplex $ FComplex8  x 0.0
+      FReal8 x -> SomeFComplex $ FComplex16 x 0.0

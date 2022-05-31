@@ -1,17 +1,15 @@
 module FortranSrc.Repr.Value.Scalar where
 
-import FortranSrc.Repr.Value.Common
 import FortranSrc.Repr.Value.Scalar.Int
 import FortranSrc.Repr.Value.Scalar.Real
 import FortranSrc.Repr.Value.Scalar.Complex
-import FortranSrc.Repr.Value.Scalar.Logical
 import FortranSrc.Repr.Value.Scalar.String
 import GHC.Generics ( Generic )
 
-data FV (pr :: PrimRepr)
-  = FVInt     (SomeFInt     pr)
+data FVM
+  = FVInt     (SomeFInt FIntM)
   | FVReal    SomeFReal
   | FVComplex SomeFComplex
-  | FVLogical (SomeFLogical pr)
+  | FVLogical (SomeFInt FIntM)
   | FVString  SomeFString
     deriving stock (Generic, Show, Eq)

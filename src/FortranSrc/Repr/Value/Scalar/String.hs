@@ -1,49 +1,48 @@
--- TODO Ord instance
-
 module FortranSrc.Repr.Value.Scalar.String where
 
-import FortranSrc.Repr.Type.Scalar.String
 import GHC.TypeNats
 import Data.Text ( Text )
 import Data.Text qualified as Text
 import FortranSrc.Repr.Util ( natVal'' )
-import Data.Singletons
-import GHC.TypeLits.Singletons ( SNat(..) )
+import Data.Proxy
 import Unsafe.Coerce
 
-data SomeFString = forall (l :: CharLen). SomeFString (Sing l) (FString l)
-deriving stock instance Show SomeFString
-instance Eq SomeFString where
-    (SomeFString _ (FString s1)) == (SomeFString _ (FString s2)) = s1 == s2
-
 -- TODO unsafe constructor do not use >:(
-data FString (l :: CharLen) where
-    FString :: KnownNat n => Text -> FString ('CharLen n)
+-- need context for Reasons(TM)
+data FString (l :: Natural) = KnownNat l => FString Text
 deriving stock instance Show (FString l)
 deriving stock instance Eq   (FString l)
+deriving stock instance Ord  (FString l) -- TODO
 
-fString :: forall n. KnownNat n => Text -> Maybe (FString ('CharLen n))
+fString :: forall l. KnownNat l => Text -> Maybe (FString l)
 fString s =
-    if   Text.length s == fromIntegral (natVal'' @n)
+    if   Text.length s == fromIntegral (natVal'' @l)
     then Just $ FString s
     else Nothing
+
+data SomeFString = forall (l :: Natural). KnownNat l => SomeFString (FString l)
+deriving stock instance Show SomeFString
+instance Eq SomeFString where
+    (SomeFString (FString sl)) == (SomeFString (FString sr)) = sl == sr
 
 someFString :: Text -> SomeFString
 someFString s =
     case someNatVal (fromIntegral (Text.length s)) of
-      SomeNat (_ :: Proxy n) -> SomeFString (SCharLen @n SNat) $ FString s
+      SomeNat (_ :: Proxy n) -> SomeFString $ FString @n s
 
 -- TODO dunno how to do this without unsafeCoerce because of the type-level nat
 -- addition >:( -- oh actually seems this is an expected usage of it. ok
 concatFString
-    :: forall l1 l2. (KnownNat l1, KnownNat l2)
-    => FString ('CharLen l1)
-    -> FString ('CharLen l2)
-    -> FString ('CharLen (l1 + l2))
-concatFString (FString s1) (FString s2) = unsafeCoerce (FString @l1 $ s1 <> s2)
+    :: forall ll lr. (KnownNat ll, KnownNat lr)
+    => FString ll
+    -> FString lr
+    -> FString (ll + lr)
+concatFString (FString sl) (FString sr) =
+    unsafeCoerce $ FString @ll $ sl <> sr
 
 concatSomeFString :: SomeFString -> SomeFString -> SomeFString
-concatSomeFString (SomeFString (SCharLen SNat) s1) (SomeFString (SCharLen SNat) s2) =
-    case concatFString s1 s2 of
-      s3@(FString _) -> SomeFString (SCharLen SNat) s3
-concatSomeFString _ _ = error "undefined (but shouldn't be possible for now)"
+concatSomeFString (SomeFString sl) (SomeFString sr) =
+    case concatFString sl sr of s@FString{} -> SomeFString s
+
+fStringBOp :: (Text -> Text -> r) -> FString ll -> FString lr -> r
+fStringBOp f (FString sl) (FString sr) = f sl sr
