@@ -20,6 +20,9 @@ fString s =
     then Just $ FString s
     else Nothing
 
+fStringLen :: forall l. KnownNat l => FString l -> Natural
+fStringLen _ = natVal'' @l
+
 data SomeFString = forall (l :: Natural). KnownNat l => SomeFString (FString l)
 deriving stock instance Show SomeFString
 instance Eq SomeFString where
@@ -29,6 +32,9 @@ someFString :: Text -> SomeFString
 someFString s =
     case someNatVal (fromIntegral (Text.length s)) of
       SomeNat (_ :: Proxy n) -> SomeFString $ FString @n s
+
+someFStringLen :: SomeFString -> Natural
+someFStringLen (SomeFString s) = fStringLen s
 
 -- TODO dunno how to do this without unsafeCoerce because of the type-level nat
 -- addition >:( -- oh actually seems this is an expected usage of it. ok
@@ -41,8 +47,11 @@ concatFString (FString sl) (FString sr) =
     unsafeCoerce $ FString @ll $ sl <> sr
 
 concatSomeFString :: SomeFString -> SomeFString -> SomeFString
-concatSomeFString (SomeFString sl) (SomeFString sr) =
-    case concatFString sl sr of s@FString{} -> SomeFString s
+concatSomeFString (SomeFString l) (SomeFString r) =
+    case concatFString l r of s@FString{} -> SomeFString s
 
 fStringBOp :: (Text -> Text -> r) -> FString ll -> FString lr -> r
-fStringBOp f (FString sl) (FString sr) = f sl sr
+fStringBOp f (FString l) (FString r) = f l r
+
+someFStringBOp :: (Text -> Text -> r) -> SomeFString -> SomeFString -> r
+someFStringBOp f (SomeFString l) (SomeFString r) = fStringBOp f l r

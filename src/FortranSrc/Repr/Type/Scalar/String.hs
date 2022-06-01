@@ -37,8 +37,5 @@ $(singletons [d|
 deriving stock instance Generic CharLen
 deriving stock instance Data    CharLen
 
-prettyCharLen :: CharLen -> String
-prettyCharLen = \case
-  CharLen l       -> "LEN="<>show l
-  CharLenAssumed  -> "LEN=*"
-  CharLenDeferred -> "LEN=:"
+prettyCharLen :: Natural -> String
+prettyCharLen l = "LEN="<>show l

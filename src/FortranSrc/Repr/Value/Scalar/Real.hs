@@ -46,6 +46,13 @@ instance Eq  SomeFReal where
 instance Ord SomeFReal where
     compare (SomeFReal l) (SomeFReal r) = fRealBOp compare l r
 
+-- | Recover some @REAL(x)@'s kind (the @x@).
+someFRealKind :: SomeFReal -> FTReal
+someFRealKind (SomeFReal r) =
+    case r of
+      FReal4{} -> FTReal4
+      FReal8{} -> FTReal8
+
 someFRealBOp'
     :: (Float  -> Float  -> r)
     -> (Double -> Double -> r)

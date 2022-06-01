@@ -41,6 +41,13 @@ deriving stock instance Show SomeFComplex
 instance Eq  SomeFComplex where
     (SomeFComplex l) == (SomeFComplex r) = fComplexBOp (==) (&&) l r
 
+-- | Recover some @COMPLEX(x)@'s kind (the @x@).
+someFComplexKind :: SomeFComplex -> FTReal
+someFComplexKind (SomeFComplex c) =
+    case c of
+      FComplex8{}  -> FTReal4
+      FComplex16{} -> FTReal8
+
 someFComplexBOp'
     :: (Float  -> Float  -> a)
     -> (a -> a -> r)
