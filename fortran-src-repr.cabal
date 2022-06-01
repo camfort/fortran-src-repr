@@ -12,6 +12,7 @@ library
   exposed-modules:
       FortranSrc.Repr.Op
       FortranSrc.Repr.Tmp
+      FortranSrc.Repr.Type
       FortranSrc.Repr.Type.Array
       FortranSrc.Repr.Type.Scalar
       FortranSrc.Repr.Type.Scalar.Common
@@ -20,6 +21,7 @@ library
       FortranSrc.Repr.Type.Scalar.Real
       FortranSrc.Repr.Type.Scalar.String
       FortranSrc.Repr.Util
+      FortranSrc.Repr.Value
       FortranSrc.Repr.Value.Array
       FortranSrc.Repr.Value.Common
       FortranSrc.Repr.Value.Scalar

@@ -8,18 +8,18 @@ import FortranSrc.Repr.Value.Scalar.String
 import FortranSrc.Repr.Type.Scalar
 import GHC.Generics ( Generic )
 
-data FVM
-  = FVInt     SomeFIntM
-  | FVReal    SomeFReal
-  | FVComplex SomeFComplex
-  | FVLogical SomeFIntM
-  | FVString  SomeFString
+data FVSM
+  = FVSMInt     SomeFIntM
+  | FVSMReal    SomeFReal
+  | FVSMComplex SomeFComplex
+  | FVSMLogical SomeFIntM
+  | FVSMString  SomeFString
     deriving stock (Generic, Show, Eq)
 
-fvmType :: FVM -> FTS
+fvmType :: FVSM -> FTS
 fvmType = \case
-  FVInt     a -> FTInt     $ someFKindedKind a
-  FVReal    a -> FTReal    $ someFKindedKind a
-  FVComplex a -> FTComplex $ someFKindedKind a
-  FVLogical a -> FTLogical $ someFKindedKind a
-  FVString  a -> FTString  $ someFStringLen  a
+  FVSMInt     a -> FTInt     $ someFKindedKind a
+  FVSMReal    a -> FTReal    $ someFKindedKind a
+  FVSMComplex a -> FTComplex $ someFKindedKind a
+  FVSMLogical a -> FTLogical $ someFKindedKind a
+  FVSMString  a -> FTString  $ someFStringLen  a
