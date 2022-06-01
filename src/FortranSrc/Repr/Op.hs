@@ -1,6 +1,7 @@
 module FortranSrc.Repr.Op where
 
 import FortranSrc.Repr.Value.Scalar
+import FortranSrc.Repr.Value.Scalar.Common
 import FortranSrc.Repr.Value.Scalar.Int
 import FortranSrc.Repr.Value.Scalar.Real
 import FortranSrc.Repr.Value.Scalar.Complex
@@ -17,13 +18,13 @@ data Error
 -- https://gcc.gnu.org/onlinedocs/gfortran/DBLE.html#DBLE
 opIcDble :: FVM -> Either Error (FReal 'FTReal8)
 opIcDble = \case
-  FVComplex (SomeFComplex c) -> case c of
+  FVComplex (SomeFKinded c) -> case c of
     FComplex8  r _i -> rfr8 $ float2Double r
     FComplex16 r _i -> rfr8 r
-  FVReal (SomeFReal r) -> case r of
+  FVReal (SomeFKinded r) -> case r of
     FReal4 r'   -> rfr8 $ float2Double r'
     FReal8 _r'  -> Right r
-  FVInt (SomeFInt i) -> rfr8 $ withFIntM i
+  FVInt (SomeFKinded i) -> rfr8 $ withFIntM i
   v -> eBadArgType1 ["COMPLEX", "REAL", "INT"] v
   where rfr8 = Right . FReal8
 
@@ -39,7 +40,7 @@ opIcNumericBOp
 opIcNumericBOp bop = go
   where
     go (FVInt l) (FVInt r) = Right $ FVInt $ someFIntMBOpWrap bop l r
-    go (FVInt (SomeFInt l)) (FVReal r) =
+    go (FVInt (SomeFKinded l)) (FVReal r) =
         Right $ FVReal $ someFRealUOpWrap (\x -> withFIntM l `bop` x) r
     -- TODO int complex
     go (FVReal l) (FVReal r) = Right $ FVReal $ someFRealBOpWrap bop l r
@@ -53,7 +54,7 @@ opIcNumRelBOp
 opIcNumRelBOp bop = go
   where
     go (FVInt l) (FVInt r) = Right $ someFIntMBOp bop l r
-    go (FVInt (SomeFInt l)) (FVReal r) =
+    go (FVInt (SomeFKinded l)) (FVReal r) =
         Right $ someFRealUOp (\x -> withFIntM l `bop` x) r
     -- TODO int complex
     go (FVReal l) (FVReal r) = Right $ someFRealBOp bop l r

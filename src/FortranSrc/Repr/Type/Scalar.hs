@@ -14,7 +14,7 @@ import Data.Data ( Data )
 data FTS
   = FTInt FTInt
   | FTReal FTReal
-  | FTComplex' FTComplex
+  | FTComplex FTReal
   | FTLogical FTInt
   | FTString Natural
   | FTCustom String     -- ^ F77 structure, F90 DDT (non-intrinsic scalar)
@@ -22,12 +22,12 @@ data FTS
 
 prettyFTS :: FTS -> String
 prettyFTS = \case
-  FTInt      k -> prettyKinded k "INTEGER"
-  FTReal     k -> prettyKinded k "REAL"
-  FTComplex' k -> prettyKinded k "COMPLEX"
-  FTLogical  k -> prettyKinded k "LOGICAL"
-  FTString   l -> "CHARACTER("<>prettyCharLen l<>")"
-  FTCustom   t -> "TYPE("<>t<>")"
+  FTInt     k -> prettyKinded k "INTEGER"
+  FTReal    k -> prettyKinded k "REAL"
+  FTComplex k -> prettyKinded (FTComplexWrapper k) "COMPLEX"
+  FTLogical k -> prettyKinded k "LOGICAL"
+  FTString  l -> "CHARACTER("<>prettyCharLen l<>")"
+  FTCustom  t -> "TYPE("<>t<>")"
 
 prettyKinded :: FKinded a => a -> String -> String
 prettyKinded k name = name<>"("<>show (printFKind k)<>")"

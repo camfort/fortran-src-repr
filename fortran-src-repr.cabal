@@ -12,6 +12,7 @@ library
   exposed-modules:
       FortranSrc.Repr.Op
       FortranSrc.Repr.Tmp
+      FortranSrc.Repr.Type.Array
       FortranSrc.Repr.Type.Scalar
       FortranSrc.Repr.Type.Scalar.Common
       FortranSrc.Repr.Type.Scalar.Complex
@@ -19,8 +20,10 @@ library
       FortranSrc.Repr.Type.Scalar.Real
       FortranSrc.Repr.Type.Scalar.String
       FortranSrc.Repr.Util
+      FortranSrc.Repr.Value.Array
       FortranSrc.Repr.Value.Common
       FortranSrc.Repr.Value.Scalar
+      FortranSrc.Repr.Value.Scalar.Common
       FortranSrc.Repr.Value.Scalar.Complex
       FortranSrc.Repr.Value.Scalar.Int
       FortranSrc.Repr.Value.Scalar.Logical
@@ -70,4 +73,5 @@ library
     , singletons-base
     , singletons-th
     , text
+    , vector-sized
   default-language: Haskell2010

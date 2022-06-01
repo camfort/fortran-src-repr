@@ -4,6 +4,7 @@
 module FortranSrc.Repr.Value.Scalar.Int where
 
 import FortranSrc.Repr.Type.Scalar.Int
+import FortranSrc.Repr.Value.Scalar.Common
 import Data.Kind
 import Data.Int
 import Data.Singletons
@@ -71,8 +72,69 @@ fIntMBOp f = fIntMBOp' f f f f
 
 --------------------------------------------------------------------------------
 
+type SomeFIntM = SomeFKinded FTInt FIntM
+deriving stock instance Show SomeFIntM
+instance Eq SomeFIntM where
+    (SomeFKinded l) == (SomeFKinded r) = fIntMBOp (==) l r
+
+someFIntMUOpWrap'
+    :: (Int8  -> Int8)
+    -> (Int16 -> Int16)
+    -> (Int32 -> Int32)
+    -> (Int64 -> Int64)
+    -> SomeFIntM -> SomeFIntM
+someFIntMUOpWrap' k1f  k2f  k4f  k8f  (SomeFKinded i) =
+    fIntMUOp'     k1f' k2f' k4f' k8f' i
+  where
+    k1f' = SomeFKinded . FIntM1 . k1f
+    k2f' = SomeFKinded . FIntM2 . k2f
+    k4f' = SomeFKinded . FIntM4 . k4f
+    k8f' = SomeFKinded . FIntM8 . k8f
+
+someFIntMUOpWrap
+    :: (forall a. Integral a => a -> a)
+    -> SomeFIntM -> SomeFIntM
+someFIntMUOpWrap f = someFIntMUOpWrap' f f f f
+
+someFIntMBOp'
+    :: (Int8  -> Int8  -> r)
+    -> (Int16 -> Int16 -> r)
+    -> (Int32 -> Int32 -> r)
+    -> (Int64 -> Int64 -> r)
+    -> SomeFIntM -> SomeFIntM -> r
+someFIntMBOp' k1f k2f k4f k8f (SomeFKinded il) (SomeFKinded ir) =
+    fIntMBOp' k1f k2f k4f k8f il            ir
+
+someFIntMBOp
+    :: (forall a. Integral a => a -> a -> r)
+    -> SomeFIntM -> SomeFIntM -> r
+someFIntMBOp f = someFIntMBOp' f f f f
+
+someFIntMBOpWrap'
+    :: (Int8  -> Int8  -> Int8)
+    -> (Int16 -> Int16 -> Int16)
+    -> (Int32 -> Int32 -> Int32)
+    -> (Int64 -> Int64 -> Int64)
+    -> SomeFIntM -> SomeFIntM -> SomeFIntM
+someFIntMBOpWrap' k1f  k2f  k4f  k8f =
+    someFIntMBOp' k1f' k2f' k4f' k8f'
+  where
+    k1f' l r = SomeFKinded $ FIntM1 $ k1f l r
+    k2f' l r = SomeFKinded $ FIntM2 $ k2f l r
+    k4f' l r = SomeFKinded $ FIntM4 $ k4f l r
+    k8f' l r = SomeFKinded $ FIntM8 $ k8f l r
+
+someFIntMBOpWrap
+    :: (forall a. Integral a => a -> a -> a)
+    -> SomeFIntM -> SomeFIntM -> SomeFIntM
+someFIntMBOpWrap f = someFIntMBOpWrap' f f f f
+
+--------------------------------------------------------------------------------
+
 newtype FIntI (k :: FTInt) = FIntI Integer
-    deriving stock (Show, Eq, Ord)
+    deriving (Show, Eq, Ord) via Integer
+
+--------------------------------------------------------------------------------
 
 fIntICheckBounds
     :: forall k rep. (rep ~ FIntMRep k, Bounded rep, Integral rep)
@@ -84,48 +146,18 @@ fIntICheckBounds (FIntI i) =
          then Just "TODO too small"
          else Nothing
 
---------------------------------------------------------------------------------
-
--- TODO Sing or SFTInt? both seem to work (...?)
-data SomeFInt pr =
-    forall (k :: FTInt). SingI k => SomeFInt (pr k)
-deriving stock instance Show (SomeFInt FIntI)
-deriving stock instance Show (SomeFInt FIntM)
-instance Eq (SomeFInt FIntI) where
-    (SomeFInt (FIntI il)) == (SomeFInt (FIntI ir)) = il == ir
-instance Eq (SomeFInt FIntM) where
-    (SomeFInt il) == (SomeFInt ir) = fIntMBOp (==) il ir
-
--- | Recover some @INTEGER(x)@'s kind (the @x@).
-someFIntKind :: forall pr. SomeFInt pr -> FTInt
-someFIntKind (SomeFInt (_ :: pr k)) = demote @k
-
-someFIntMUOpWrap'
-    :: (Int8  -> Int8)
-    -> (Int16 -> Int16)
-    -> (Int32 -> Int32)
-    -> (Int64 -> Int64)
-    -> SomeFInt FIntM -> SomeFInt FIntM
-someFIntMUOpWrap' k1f  k2f  k4f  k8f  (SomeFInt i) =
-    fIntMUOp'     k1f' k2f' k4f' k8f' i
-  where
-    k1f' = SomeFInt . FIntM1 . k1f
-    k2f' = SomeFInt . FIntM2 . k2f
-    k4f' = SomeFInt . FIntM4 . k4f
-    k8f' = SomeFInt . FIntM8 . k8f
-
-someFIntMUOpWrap
-    :: (forall a. Integral a => a -> a)
-    -> SomeFInt FIntM -> SomeFInt FIntM
-someFIntMUOpWrap f = someFIntMUOpWrap' f f f f
+type SomeFIntI = SomeFKinded FTInt FIntI
+deriving stock instance Show SomeFIntI
+instance Eq SomeFIntI where
+    (SomeFKinded (FIntI l)) == (SomeFKinded (FIntI r)) = l == r
 
 -- this might look silly, but it's because even if we don't do kinded
 -- calculations, we must still kind the output
 someFIntIBOpWrap
     :: (Integer -> Integer -> Integer)
-    -> SomeFInt FIntI -> SomeFInt FIntI -> SomeFInt FIntI
-someFIntIBOpWrap f l@(SomeFInt (FIntI il)) r@(SomeFInt (FIntI ir)) =
-    case (someFIntKind l, someFIntKind r) of
+    -> SomeFIntI -> SomeFIntI -> SomeFIntI
+someFIntIBOpWrap f l@(SomeFKinded (FIntI il)) r@(SomeFKinded (FIntI ir)) =
+    case (someFKindedKind l, someFKindedKind r) of
       (FTInt8, _) -> as @'FTInt8
       (_, FTInt8) -> as @'FTInt8
       (FTInt4, _) -> as @'FTInt4
@@ -135,38 +167,5 @@ someFIntIBOpWrap f l@(SomeFInt (FIntI il)) r@(SomeFInt (FIntI ir)) =
       (FTInt1, FTInt1) -> as @'FTInt1
   where
     x = f il ir
-    as :: forall (k :: FTInt). SingI k => SomeFInt FIntI
-    as = SomeFInt $ FIntI @k x
-
-someFIntMBOp'
-    :: (Int8  -> Int8  -> r)
-    -> (Int16 -> Int16 -> r)
-    -> (Int32 -> Int32 -> r)
-    -> (Int64 -> Int64 -> r)
-    -> SomeFInt FIntM -> SomeFInt FIntM -> r
-someFIntMBOp' k1f k2f k4f k8f (SomeFInt il) (SomeFInt ir) =
-    fIntMBOp' k1f k2f k4f k8f il            ir
-
-someFIntMBOp
-    :: (forall a. Integral a => a -> a -> r)
-    -> SomeFInt FIntM -> SomeFInt FIntM -> r
-someFIntMBOp f = someFIntMBOp' f f f f
-
-someFIntMBOpWrap'
-    :: (Int8  -> Int8  -> Int8)
-    -> (Int16 -> Int16 -> Int16)
-    -> (Int32 -> Int32 -> Int32)
-    -> (Int64 -> Int64 -> Int64)
-    -> SomeFInt FIntM -> SomeFInt FIntM -> SomeFInt FIntM
-someFIntMBOpWrap' k1f  k2f  k4f  k8f =
-    someFIntMBOp' k1f' k2f' k4f' k8f'
-  where
-    k1f' l r = SomeFInt $ FIntM1 $ k1f l r
-    k2f' l r = SomeFInt $ FIntM2 $ k2f l r
-    k4f' l r = SomeFInt $ FIntM4 $ k4f l r
-    k8f' l r = SomeFInt $ FIntM8 $ k8f l r
-
-someFIntMBOpWrap
-    :: (forall a. Integral a => a -> a -> a)
-    -> SomeFInt FIntM -> SomeFInt FIntM -> SomeFInt FIntM
-someFIntMBOpWrap f = someFIntMBOpWrap' f f f f
+    as :: forall (k :: FTInt). SingI k => SomeFIntI
+    as = SomeFKinded $ FIntI @k x

@@ -1,6 +1,7 @@
 module FortranSrc.Repr.Value.Scalar.Real where
 
 import FortranSrc.Repr.Type.Scalar.Real
+import FortranSrc.Repr.Value.Scalar.Common
 import GHC.Float ( float2Double )
 
 data FReal (k :: FTReal) where
@@ -39,25 +40,18 @@ fRealUOp
     -> FReal k -> r
 fRealUOp f = fRealUOp' f f
 
-data SomeFReal = forall (k :: FTReal). SomeFReal (FReal k)
+type SomeFReal = SomeFKinded FTReal FReal
 deriving stock instance Show SomeFReal
 instance Eq  SomeFReal where
-    (SomeFReal l) == (SomeFReal r) = fRealBOp (==) l r
+    (SomeFKinded l) == (SomeFKinded r) = fRealBOp (==) l r
 instance Ord SomeFReal where
-    compare (SomeFReal l) (SomeFReal r) = fRealBOp compare l r
-
--- | Recover some @REAL(x)@'s kind (the @x@).
-someFRealKind :: SomeFReal -> FTReal
-someFRealKind (SomeFReal r) =
-    case r of
-      FReal4{} -> FTReal4
-      FReal8{} -> FTReal8
+    compare (SomeFKinded l) (SomeFKinded r) = fRealBOp compare l r
 
 someFRealBOp'
     :: (Float  -> Float  -> r)
     -> (Double -> Double -> r)
     -> SomeFReal -> SomeFReal -> r
-someFRealBOp' k4f k8f (SomeFReal l) (SomeFReal r) =
+someFRealBOp' k4f k8f (SomeFKinded l) (SomeFKinded r) =
     fRealBOp' k4f k8f l             r
 
 someFRealBOp
@@ -72,8 +66,8 @@ someFRealBOpWrap'
 someFRealBOpWrap' k4f  k8f =
     someFRealBOp' k4f' k8f'
   where
-    k4f' l r = SomeFReal $ FReal4 $ k4f l r
-    k8f' l r = SomeFReal $ FReal8 $ k8f l r
+    k4f' l r = SomeFKinded $ FReal4 $ k4f l r
+    k8f' l r = SomeFKinded $ FReal8 $ k8f l r
 
 someFRealBOpWrap
     :: (forall a. RealFloat a => a -> a -> a)
@@ -84,7 +78,7 @@ someFRealUOp'
     :: (Float  -> r)
     -> (Double -> r)
     -> SomeFReal -> r
-someFRealUOp' k4f k8f (SomeFReal x) =
+someFRealUOp' k4f k8f (SomeFKinded x) =
     fRealUOp' k4f k8f x
 
 someFRealUOp
@@ -99,8 +93,8 @@ someFRealUOpWrap'
 someFRealUOpWrap' k4f  k8f =
     someFRealUOp' k4f' k8f'
   where
-    k4f' = SomeFReal . FReal4 . k4f
-    k8f' = SomeFReal . FReal8 . k8f
+    k4f' = SomeFKinded . FReal4 . k4f
+    k8f' = SomeFKinded . FReal8 . k8f
 
 someFRealUOpWrap
     :: (forall a. RealFloat a => a -> a)

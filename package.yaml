@@ -57,6 +57,7 @@ dependencies:
 - singletons-base
 - text
 - bytestring # TODO tmp for serializing doubles (...)
+- vector-sized
 
 library:
   source-dirs: src

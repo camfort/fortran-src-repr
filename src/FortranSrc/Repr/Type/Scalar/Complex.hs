@@ -6,15 +6,15 @@ import FortranSrc.Repr.Type.Scalar.Real
 import GHC.Generics ( Generic )
 import Data.Data ( Data )
 
-newtype FTComplex = FTComplex { unFTComplex :: FTReal }
+newtype FTComplexWrapper = FTComplexWrapper { unFTComplexWrapper :: FTReal }
     deriving stock (Generic, Data, Show, Eq, Ord)
 
-instance FKinded FTComplex where
-    type FKindOf ('FTComplex 'FTReal4) = 8
-    type FKindOf ('FTComplex 'FTReal8) = 16
-    parseFKind = \case 8  -> Just $ FTComplex FTReal4
-                       16 -> Just $ FTComplex FTReal8
+instance FKinded FTComplexWrapper where
+    type FKindOf ('FTComplexWrapper 'FTReal4) = 8
+    type FKindOf ('FTComplexWrapper 'FTReal8) = 16
+    parseFKind = \case 8  -> Just $ FTComplexWrapper FTReal4
+                       16 -> Just $ FTComplexWrapper FTReal8
                        _ -> Nothing
     printFKind = \case
-      FTComplex FTReal4 -> 8
-      FTComplex FTReal8 -> 16
+      FTComplexWrapper FTReal4 -> 8
+      FTComplexWrapper FTReal8 -> 16

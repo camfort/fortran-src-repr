@@ -1,5 +1,6 @@
 module FortranSrc.Repr.Value.Scalar.Complex where
 
+import FortranSrc.Repr.Value.Scalar.Common
 import FortranSrc.Repr.Type.Scalar.Real
 import FortranSrc.Repr.Value.Scalar.Real
 import GHC.Float ( float2Double )
@@ -36,17 +37,10 @@ fComplexBOp
     -> FComplex kl -> FComplex kr -> r
 fComplexBOp f g = fComplexBOp' f g f g
 
-data SomeFComplex = forall (k :: FTReal). SomeFComplex (FComplex k)
+type SomeFComplex = SomeFKinded FTReal FComplex
 deriving stock instance Show SomeFComplex
 instance Eq  SomeFComplex where
-    (SomeFComplex l) == (SomeFComplex r) = fComplexBOp (==) (&&) l r
-
--- | Recover some @COMPLEX(x)@'s kind (the @x@).
-someFComplexKind :: SomeFComplex -> FTReal
-someFComplexKind (SomeFComplex c) =
-    case c of
-      FComplex8{}  -> FTReal4
-      FComplex16{} -> FTReal8
+    (SomeFKinded l) == (SomeFKinded r) = fComplexBOp (==) (&&) l r
 
 someFComplexBOp'
     :: (Float  -> Float  -> a)
@@ -54,7 +48,7 @@ someFComplexBOp'
     -> (Double -> Double -> b)
     -> (b -> b -> r)
     -> SomeFComplex -> SomeFComplex -> r
-someFComplexBOp' k8f k8g k16f k16g (SomeFComplex l) (SomeFComplex r) =
+someFComplexBOp' k8f k8g k16f k16g (SomeFKinded l) (SomeFKinded r) =
     fComplexBOp' k8f k8g k16f k16g l                r
 
 someFComplexBOp
@@ -70,8 +64,8 @@ someFComplexBOpWrap'
 someFComplexBOpWrap' k8f     k16f =
     someFComplexBOp' k8f k8g k16f k16g
   where
-    k8g  l r = SomeFComplex $ FComplex8  l r
-    k16g l r = SomeFComplex $ FComplex16 l r
+    k8g  l r = SomeFKinded $ FComplex8  l r
+    k16g l r = SomeFKinded $ FComplex16 l r
 
 someFComplexBOpWrap
     :: (forall a. RealFloat a => a -> a -> a)
@@ -79,7 +73,7 @@ someFComplexBOpWrap
 someFComplexBOpWrap f = someFComplexBOpWrap' f f
 
 someFComplexFromReal :: SomeFReal -> SomeFComplex
-someFComplexFromReal (SomeFReal r) =
+someFComplexFromReal (SomeFKinded r) =
     case r of
-      FReal4 x -> SomeFComplex $ FComplex8  x 0.0
-      FReal8 x -> SomeFComplex $ FComplex16 x 0.0
+      FReal4 x -> SomeFKinded $ FComplex8  x 0.0
+      FReal8 x -> SomeFKinded $ FComplex16 x 0.0
