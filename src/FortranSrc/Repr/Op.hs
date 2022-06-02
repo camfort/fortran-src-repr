@@ -36,7 +36,7 @@ eBadArgType2 expected l r = Left $ EBadArgType2 expected (fvsmType l) (fvsmType 
 
 opIcNumericBOp
     :: (forall a. Num a => a -> a -> a)
-    -> FVSM -> FVSM -> Either String FVSM
+    -> FVSM -> FVSM -> Either Error FVSM
 opIcNumericBOp bop = go
   where
     go (FVSMInt l) (FVSMInt r) = Right $ FVSMInt $ someFIntMBOpWrap bop l r
@@ -50,7 +50,7 @@ opIcNumericBOp bop = go
 
 opIcNumRelBOp
     :: (forall a. Ord a => a -> a -> r)
-    -> FVSM -> FVSM -> Either String r
+    -> FVSM -> FVSM -> Either Error r
 opIcNumRelBOp bop = go
   where
     go (FVSMInt l) (FVSMInt r) = Right $ someFIntMBOp bop l r
