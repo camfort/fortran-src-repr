@@ -77,6 +77,20 @@ deriving stock instance Show SomeFIntM
 instance Eq SomeFIntM where
     (SomeFKinded l) == (SomeFKinded r) = fIntMBOp (==) l r
 
+someFIntMUOp'
+    :: (Int8  -> r)
+    -> (Int16 -> r)
+    -> (Int32 -> r)
+    -> (Int64 -> r)
+    -> SomeFIntM -> r
+someFIntMUOp' k1f k2f k4f k8f (SomeFKinded i) =
+    fIntMUOp' k1f k2f k4f k8f i
+
+someFIntMUOp
+    :: (forall a. Integral a => a -> r)
+    -> SomeFIntM -> r
+someFIntMUOp f = someFIntMUOp' f f f f
+
 someFIntMUOpWrap'
     :: (Int8  -> Int8)
     -> (Int16 -> Int16)
