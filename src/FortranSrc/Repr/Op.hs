@@ -29,10 +29,10 @@ opIcDble = \case
   where rfr8 = Right . FReal8
 
 eBadArgType1 :: [String] -> FVSM -> Either Error a
-eBadArgType1 expected got = Left $ EBadArgType1 expected $ fvmType got
+eBadArgType1 expected got = Left $ EBadArgType1 expected $ fvsmType got
 
 eBadArgType2 :: [String] -> FVSM -> FVSM -> Either Error a
-eBadArgType2 expected l r = Left $ EBadArgType2 expected (fvmType l) (fvmType r)
+eBadArgType2 expected l r = Left $ EBadArgType2 expected (fvsmType l) (fvsmType r)
 
 opIcNumericBOp
     :: (forall a. Num a => a -> a -> a)

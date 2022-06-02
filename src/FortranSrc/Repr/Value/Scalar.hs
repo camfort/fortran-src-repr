@@ -16,8 +16,8 @@ data FVSM
   | FVSMString  SomeFString
     deriving stock (Generic, Show, Eq)
 
-fvmType :: FVSM -> FTS
-fvmType = \case
+fvsmType :: FVSM -> FTS
+fvsmType = \case
   FVSMInt     a -> FTInt     $ someFKindedKind a
   FVSMReal    a -> FTReal    $ someFKindedKind a
   FVSMComplex a -> FTComplex $ someFKindedKind a

@@ -86,9 +86,3 @@ fvaType = \case
   where
     go :: (Demote k -> FTS) -> SomeFVA k ft -> FTA
     go f a = FTA (f (someFVAKind a)) (someFVAShape a)
-{-
-  FVAMReal    a -> 
-  FVAMComplex a -> 
-  FVAMLogical a -> 
-  FVAMString  a -> 
--}
