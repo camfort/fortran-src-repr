@@ -25,6 +25,7 @@ deriving stock instance Enum    FTReal
 instance FKinded FTReal where
     type FKindOf 'FTReal4 = 4
     type FKindOf 'FTReal8 = 8
+    type FKindDefault = 'FTReal4
     parseFKind = \case 4 -> Just FTReal4
                        8 -> Just FTReal8
                        _ -> Nothing

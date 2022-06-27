@@ -12,6 +12,7 @@ newtype FTComplexWrapper = FTComplexWrapper { unFTComplexWrapper :: FTReal }
 instance FKinded FTComplexWrapper where
     type FKindOf ('FTComplexWrapper 'FTReal4) = 8
     type FKindOf ('FTComplexWrapper 'FTReal8) = 16
+    type FKindDefault = 'FTComplexWrapper 'FTReal4
     parseFKind = \case 8  -> Just $ FTComplexWrapper FTReal4
                        16 -> Just $ FTComplexWrapper FTReal8
                        _ -> Nothing
