@@ -1,3 +1,5 @@
+-- TODO candidate for improving. other ways of writing, name is long & poor
+
 module FortranSrc.Repr.Type.Scalar.Complex where
 
 import FortranSrc.Repr.Type.Scalar.Common

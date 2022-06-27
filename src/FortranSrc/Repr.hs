@@ -1,14 +1,56 @@
 module FortranSrc.Repr
   (
-  -- * Design aims
+  -- * Assorted notes
+  -- ** Design aims
   -- $design-aims
 
-  -- * Kind semantics
+  -- ** Kind semantics
   -- $kind-semantics
 
-  -- * Naming conventions
+  -- ** Naming conventions
   -- $naming-conventions
+
+  -- * Re-exports
+  -- ** Type representation
+    module FortranSrc.Repr.Type
+  , module FortranSrc.Repr.Type.Array
+  , module FortranSrc.Repr.Type.Scalar
+  , module FortranSrc.Repr.Type.Scalar.Common
+  , module FortranSrc.Repr.Type.Scalar.Int
+  , module FortranSrc.Repr.Type.Scalar.Real
+  , module FortranSrc.Repr.Type.Scalar.Complex
+  , module FortranSrc.Repr.Type.Scalar.String
+
+  -- ** Value representation
+  , module FortranSrc.Repr.Value
+  , module FortranSrc.Repr.Value.Array
+  , module FortranSrc.Repr.Value.Scalar
+  , module FortranSrc.Repr.Value.Scalar.Common
+  , module FortranSrc.Repr.Value.Scalar.Int
+  , module FortranSrc.Repr.Value.Scalar.Real
+  , module FortranSrc.Repr.Value.Scalar.Complex
+  , module FortranSrc.Repr.Value.Scalar.Logical
+  , module FortranSrc.Repr.Value.Scalar.String
   ) where
+
+import FortranSrc.Repr.Type
+import FortranSrc.Repr.Type.Array
+import FortranSrc.Repr.Type.Scalar
+import FortranSrc.Repr.Type.Scalar.Common
+import FortranSrc.Repr.Type.Scalar.Int
+import FortranSrc.Repr.Type.Scalar.Real
+import FortranSrc.Repr.Type.Scalar.Complex
+import FortranSrc.Repr.Type.Scalar.String
+
+import FortranSrc.Repr.Value
+import FortranSrc.Repr.Value.Array
+import FortranSrc.Repr.Value.Scalar
+import FortranSrc.Repr.Value.Scalar.Common
+import FortranSrc.Repr.Value.Scalar.Int
+import FortranSrc.Repr.Value.Scalar.Real
+import FortranSrc.Repr.Value.Scalar.Complex
+import FortranSrc.Repr.Value.Scalar.Logical
+import FortranSrc.Repr.Value.Scalar.String
 
 {- $design-aims
 
