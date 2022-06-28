@@ -1,4 +1,12 @@
--- TODO candidate for improving. other ways of writing, name is long & poor
+{- | Fortran complex data type.
+
+The complex data type is a simple layer on top of reals. We reuse the type and
+value representation from reals, but for convenience, we provide a newtype
+wrapper to enable writing a 'FKinded' instance for the complex type.
+
+TODO candidate for improving. other ways of writing, name is long & poor.
+alternatively, could enforce usage of this
+-}
 
 module FortranSrc.Repr.Type.Scalar.Complex where
 

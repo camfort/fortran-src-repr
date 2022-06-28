@@ -10,5 +10,11 @@ someFLogicalNot = someFIntUOpWrap $ \bi -> if bi == 1 then 0 else 1
 --   integer of default kind).
 --   TODO
 --fLogical :: Bool -> FInt (FKindDefault FTInt)
-fLogical :: Bool -> FInt 'FTInt4
-fLogical = \case True -> FInt4 1; False -> FInt4 0
+toFLogical :: Bool -> FInt 'FTInt4
+toFLogical = \case True -> FInt4 1; False -> FInt4 0
+
+-- | Retrieve the boolean value stored by a @LOGICAL(x)@.
+--
+-- TODO confirm correctness
+fromSomeFLogical :: SomeFInt -> Bool
+fromSomeFLogical = someFIntUOp $ \i -> if i == 1 then True else False
