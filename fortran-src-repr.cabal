@@ -10,7 +10,11 @@ build-type:     Simple
 
 library
   exposed-modules:
-      FortranSrc.Repr.Op
+      FortranSrc.Repr
+      FortranSrc.Repr.Eval.Common
+      FortranSrc.Repr.Eval.Op
+      FortranSrc.Repr.Eval.Type
+      FortranSrc.Repr.Eval.Value
       FortranSrc.Repr.Tmp
       FortranSrc.Repr.Type
       FortranSrc.Repr.Type.Array
@@ -23,12 +27,19 @@ library
       FortranSrc.Repr.Util
       FortranSrc.Repr.Value
       FortranSrc.Repr.Value.Array
+      FortranSrc.Repr.Value.Array.Machine
       FortranSrc.Repr.Value.Common
+      FortranSrc.Repr.Value.Machine
       FortranSrc.Repr.Value.Scalar
       FortranSrc.Repr.Value.Scalar.Common
       FortranSrc.Repr.Value.Scalar.Complex
       FortranSrc.Repr.Value.Scalar.Int
+      FortranSrc.Repr.Value.Scalar.Int.Idealized
+      FortranSrc.Repr.Value.Scalar.Int.Machine
       FortranSrc.Repr.Value.Scalar.Logical
+      FortranSrc.Repr.Value.Scalar.Logical.Idealized
+      FortranSrc.Repr.Value.Scalar.Logical.Machine
+      FortranSrc.Repr.Value.Scalar.Machine
       FortranSrc.Repr.Value.Scalar.Real
       FortranSrc.Repr.Value.Scalar.String
   other-modules:
@@ -71,6 +82,8 @@ library
   build-depends:
       base
     , bytestring
+    , fortran-src
+    , mtl
     , singletons
     , singletons-base
     , singletons-th

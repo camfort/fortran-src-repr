@@ -1,25 +1,5 @@
-module FortranSrc.Repr.Value.Scalar where
+module FortranSrc.Repr.Value.Scalar
+  ( module FortranSrc.Repr.Value.Scalar.Machine
+  ) where
 
-import FortranSrc.Repr.Value.Scalar.Common
-import FortranSrc.Repr.Value.Scalar.Int
-import FortranSrc.Repr.Value.Scalar.Real
-import FortranSrc.Repr.Value.Scalar.Complex
-import FortranSrc.Repr.Value.Scalar.String
-import FortranSrc.Repr.Type.Scalar
-import GHC.Generics ( Generic )
-
-data FVSM
-  = FVSMInt     SomeFIntM
-  | FVSMReal    SomeFReal
-  | FVSMComplex SomeFComplex
-  | FVSMLogical SomeFIntM
-  | FVSMString  SomeFString
-    deriving stock (Generic, Show, Eq)
-
-fvsmType :: FVSM -> FTS
-fvsmType = \case
-  FVSMInt     a -> FTInt     $ someFKindedKind a
-  FVSMReal    a -> FTReal    $ someFKindedKind a
-  FVSMComplex a -> FTComplex $ someFKindedKind a
-  FVSMLogical a -> FTLogical $ someFKindedKind a
-  FVSMString  a -> FTString  $ someFStringLen  a
+import FortranSrc.Repr.Value.Scalar.Machine

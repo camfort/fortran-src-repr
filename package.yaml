@@ -59,6 +59,9 @@ dependencies:
 - bytestring # TODO tmp for serializing doubles (...)
 - vector-sized
 
+- fortran-src # TODO only translate
+- mtl # TODO only translate (so far)
+
 library:
   source-dirs: src
   ghc-options:

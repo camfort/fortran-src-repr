@@ -1,2 +1,6 @@
 resolver: nightly-2022-05-20
 packages: [.]
+
+extra-deps:
+- git: https://github.com/camfort/fortran-src
+  commit: e6f750f50892a45c08af0c55a98abfc5bbf5dc3a

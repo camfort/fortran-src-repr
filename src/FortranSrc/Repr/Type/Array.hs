@@ -6,13 +6,16 @@ import Numeric.Natural
 import GHC.Generics ( Generic )
 import Data.Data ( Data )
 
-data FTA = FTA
-  { ftaScalar :: FTS
-  , ftaShape  :: Shape
+-- | A Fortran array type.
+--
+-- An array type is defined by a scalar type together with a shape.
+data FArrayType = FArrayType
+  { fatScalar :: FScalarType
+  , fatShape  :: Shape
   } deriving stock (Generic, Data, Show, Eq, Ord)
 
 newtype Shape = Shape { getShape :: [Natural] }
     deriving stock (Generic, Data, Show, Eq, Ord)
 
-ftaSize :: FTA -> Natural
-ftaSize = sum . getShape . ftaShape
+fatSize :: FArrayType -> Natural
+fatSize = sum . getShape . fatShape
