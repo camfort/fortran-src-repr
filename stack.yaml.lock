@@ -3,7 +3,18 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages: []
+packages:
+- completed:
+    name: fortran-src
+    version: 0.9.0
+    git: https://github.com/camfort/fortran-src
+    pantry-tree:
+      size: 9747
+      sha256: 9c4c0bd4eceb14fc131e5ee06a6d86b0fd3ac2e65a07d6b5ad4616bc7e59f03c
+    commit: e6f750f50892a45c08af0c55a98abfc5bbf5dc3a
+  original:
+    git: https://github.com/camfort/fortran-src
+    commit: e6f750f50892a45c08af0c55a98abfc5bbf5dc3a
 snapshots:
 - completed:
     size: 588043

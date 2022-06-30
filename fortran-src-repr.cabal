@@ -11,7 +11,10 @@ build-type:     Simple
 library
   exposed-modules:
       FortranSrc.Repr
-      FortranSrc.Repr.Op
+      FortranSrc.Repr.Eval.Common
+      FortranSrc.Repr.Eval.Op
+      FortranSrc.Repr.Eval.Type
+      FortranSrc.Repr.Eval.Value
       FortranSrc.Repr.Tmp
       FortranSrc.Repr.Type
       FortranSrc.Repr.Type.Array
@@ -79,6 +82,8 @@ library
   build-depends:
       base
     , bytestring
+    , fortran-src
+    , mtl
     , singletons
     , singletons-base
     , singletons-th

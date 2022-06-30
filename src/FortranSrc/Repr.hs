@@ -77,8 +77,9 @@ representations for the values. We match this in Haskell by defining a sum type
 for a given Fortran type, and making a constructor for each valid kind.
 
 Fortran standards do not specify full semantics for kinds, only things like
-interactions and precision requirements. In general, we follow gfortran's lead
-for semantics. The following general rules exist:
+interactions and precision requirements. However, average modern Fortran
+compilers tend to agree on certain things. So we follow gfortran's lead for
+semantics. The following general rules exist:
 
   * The size in bytes of a stored value is equal to its type's kind value. For
     example, a @REAL(4)@ takes 4 bytes. In general, for any type, only powers of

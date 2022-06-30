@@ -1,20 +1,28 @@
+{- | Fortran logical value.
+
+Fortran compilers usually store logicals as integers (TODO actually I think this
+is in the standard), with the same kinding. To more accurately simulate their
+behaviour, we represent them directly as integers, and simply provide a handful
+of definitions for using them as booleans.
+-}
 module FortranSrc.Repr.Value.Scalar.Logical.Machine where
 
 import FortranSrc.Repr.Type.Scalar.Int
 import FortranSrc.Repr.Value.Scalar.Int.Machine
-
-someFLogicalNot :: SomeFInt -> SomeFInt
-someFLogicalNot = someFIntUOpWrap $ \bi -> if bi == 1 then 0 else 1
-
--- | Wrap a boolean into a Fortran "machine" boolean (represented by a
---   integer of default kind).
---   TODO
---fLogical :: Bool -> FInt (FKindDefault FTInt)
-toFLogical :: Bool -> FInt 'FTInt4
-toFLogical = \case True -> FInt4 1; False -> FInt4 0
+import FortranSrc.Repr.Value.Scalar.Common
 
 -- | Retrieve the boolean value stored by a @LOGICAL(x)@.
---
--- TODO confirm correctness
-fromSomeFLogical :: SomeFInt -> Bool
-fromSomeFLogical = someFIntUOp $ \i -> if i == 1 then True else False
+fLogicalToBool :: FInt k -> Bool
+fLogicalToBool = fIntUOp $ consumeFLogicalNumeric True False
+
+-- | Convert a bool to its Fortran machine representation in any numeric type.
+fLogicalNumericFromBool :: Num a => Bool -> a
+fLogicalNumericFromBool = \case True -> 1; False -> 0
+
+-- | Consume some Fortran logical stored using an integer.
+consumeFLogicalNumeric :: (Num a, Eq a) => r -> r -> a -> r
+consumeFLogicalNumeric whenTrue whenFalse bi =
+    if bi == 1 then whenTrue else whenFalse
+
+fLogicalNot :: FInt k -> FInt k
+fLogicalNot = fIntUOpInplace (consumeFLogicalNumeric 0 1)
