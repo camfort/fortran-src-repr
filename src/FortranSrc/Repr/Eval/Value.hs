@@ -1,3 +1,5 @@
+{-# LANGUAGE ConstraintKinds #-}
+
 module FortranSrc.Repr.Eval.Value where
 
 import qualified Language.Fortran.AST as F
